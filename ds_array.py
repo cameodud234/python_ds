@@ -7,8 +7,8 @@ class Array:
         array will resize.
         """
         if isinstance(size, int):
-            if size <= 0:
-                raise ValueError(f"Size: {size}, must be larger than zero")
+            # if size <= 0:
+                # raise ValueError(f"Size: {size}, must be larger than zero")
             self._max_size = size
             self._current_size = 0
             self._allocated_cell = [0] * self._max_size
@@ -46,4 +46,4 @@ class Array:
 
 
 
-class ArrayIter
+# class ArrayIter
