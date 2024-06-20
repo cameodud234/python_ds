@@ -1,3 +1,4 @@
+
 class Array:
 
     def __init__(self, size: int, typeof: type) -> None:
@@ -7,8 +8,9 @@ class Array:
         array will resize.
         """
         if isinstance(size, int):
-            # if size <= 0:
-                # raise ValueError(f"Size: {size}, must be larger than zero")
+
+            if size <= 0:
+                raise ValueError(f"Size: {size}, must be larger than zero")
             self._max_size = size
             self._current_size = 0
             self._allocated_cell = [0] * self._max_size
@@ -18,6 +20,8 @@ class Array:
 
     def get_array(self):
         return self._allocated_cell
+    
+    
     
     def __str__(self):
         return self._allocated_cell.__str__()
