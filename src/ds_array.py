@@ -7,7 +7,7 @@ class Array:
         If items are added past the max size the 
         array will resize.
         """
-        if isinstance(size, int):
+        if isinstance(size, int) and not isinstance(size, bool):
 
             if size <= 0:
                 raise ValueError(f"Size: {size}, must be larger than zero")
@@ -20,8 +20,6 @@ class Array:
 
     def get_array(self):
         return self._allocated_cell
-    
-    
     
     def __str__(self):
         return self._allocated_cell.__str__()
