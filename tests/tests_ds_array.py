@@ -47,7 +47,7 @@ class TestArrayConstructor(unittest.TestCase):
     def test_get_array(self):
         """Test retrieving the underlying array."""
         arr = Array(4, int)
-        self.assertEqual(arr.get_array(), [0, 0, 0, 0])
+        self.assertListEqual(arr.get_array(), [])
 
     # def test_get_item(self):
 

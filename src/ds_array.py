@@ -31,9 +31,8 @@ class Array:
             raise ValueError(f"Invalid typeof: typeof={typeof}, must be int or float.")
 
 
-
     def get_array(self):
-        return self._allocated_cell
+        return self._allocated_cell[:self._current_size]
     
     def __getitem__(self, index: int):
         if isinstance(index, int) and not isinstance(index, bool):
