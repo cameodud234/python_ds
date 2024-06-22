@@ -12,20 +12,24 @@ class Array:
         array will resize.
         """
 
-        if isinstance(size, int) and not isinstance(size, bool):
-            if size < 0:
-                raise ValueError(f"size: {size}, must be greater than or equal zero.")
-            if typeof != int and typeof != float:
-                raise ValueError(f"Invalid typeof: typeof={typeof}, must be int or float.")
-            self._max_size = size
-            self._current_size = 0
-            self._typeof = typeof
-            self._iter_position = 0
-            self._allocated_cell = [self._typeof(0)] * self._max_size
-        else:
-            raise ValueError(f"Invalid size: size={size}, must be an int.")
+        self._types = (int, float)
+
+        self._constructor_check(size, typeof)
+
+        self._max_size = size
+        self._current_size = 0
+        self._typeof = typeof
+        self._iter_position = 0
+        self._allocated_cell = [self._typeof(0)] * self._max_size
         
-    # def _constructor_check(self, size: int, typeof: type[T]) -> None:
+    def _constructor_check(self, size: int, typeof: type[T]) -> None:
+        if type(size) != int:
+            raise ValueError(f"Invalid size: size={size}, must be an int.")
+        if size < 0:
+                raise ValueError(f"size: {size}, must be greater than or equal zero.")
+        if typeof != int and typeof != float:
+            raise ValueError(f"Invalid typeof: typeof={typeof}, must be int or float.")
+
 
 
     def get_array(self):
