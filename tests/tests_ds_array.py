@@ -38,9 +38,6 @@ class TestArrayConstructor(unittest.TestCase):
         """Test the __next__ method directly."""
         arr = Array(3, float)
         iterator = iter(arr)
-        self.assertEqual(next(iterator), 0.0)
-        self.assertEqual(next(iterator), 0.0)
-        self.assertEqual(next(iterator), 0.0)
         with self.assertRaises(StopIteration):
             next(iterator)  # Should raise StopIteration at the end
 

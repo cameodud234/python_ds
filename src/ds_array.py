@@ -1,5 +1,4 @@
 from typing import Union, TypeVar
-import logging
 
 class Array:
 
@@ -26,34 +25,34 @@ class Array:
         if type(size) != int:
             raise ValueError(f"Invalid size: size={size}, must be an int.")
         if size < 0:
-                raise ValueError(f"size: {size}, must be greater than or equal zero.")
+                raise ValueError(f"Invalid size: {size}, must be greater than or equal zero.")
         if typeof != int and typeof != float:
             raise ValueError(f"Invalid typeof: typeof={typeof}, must be int or float.")
 
 
-    def get_array(self):
+    def get_array(self) -> list[type[T]]:
         return self._allocated_cell[:self._current_size]
     
-    def __getitem__(self, index: int):
-        if isinstance(index, int) and not isinstance(index, bool):
-
-            if self._current_size == 0:
-                raise IndexError(f"array: {self._allocated_cell} has no members to call upon.")
-            
-            if index < self._current_size and index > 0:
-                return self._allocated_cell[index]
-            
-            else:
-                raise IndexError(f"index: {index}, is out of list index range.")
+    def __getitem__(self, index: int) -> type[T]:
+        self._get_item_check(self, index)
+        return self._allocated_cell[index]
     
-    def __str__(self):
+    def _get_item_check(self, index: int) -> None:
+        if type(index) != int:
+            raise(f"Invalid index: {index}, must be an int.")
+        if self._current_size == 0:
+                raise IndexError(f"array: {self._allocated_cell} has no members to call upon.")
+        if index < 0 or index >= self._current_size:
+            raise(f"Invalid index: {index}, out of list index range.")
+    
+    def __str__(self) -> str:
         return self._allocated_cell.__str__()
 
-    def __iter__(self):
+    def __iter__(self) -> object:
         return self
 
-    def __next__(self):
-        if self._iter_position < self._max_size:
+    def __next__(self) -> type[T]:
+        if self._iter_position < self._current_size:
             value = self._allocated_cell[self._iter_position]
             self._iter_position += 1
             return value
