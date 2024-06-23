@@ -13,8 +13,6 @@ class Array(Generic[T]):
         array will resize.
         """
 
-        self._types = (int, float)
-
         self._constructor_check(size, typeof)
 
         self._max_size = size
@@ -27,27 +25,41 @@ class Array(Generic[T]):
             raise ValueError(f"Invalid size: size={size}, must be an int.")
         if size < 0:
                 raise ValueError(f"Invalid size: {size}, must be greater than or equal zero.")
-        if typeof != int and typeof != float:
+        if typeof not in self._types:
             raise ValueError(f"Invalid typeof: typeof={typeof}, must be int or float.")
 
-
-    def get_array(self) -> list[type[T]]:
+    def get_array(self) -> list[T]:
         return self._allocated_cell[:self._current_size]
     
-    def __getitem__(self, index: int) -> type[T]:
-        self._get_item_check(self, index)
+    def add(self, element: T) -> None:
+        self._add_element_check(element)
+        self._allocated_cell[self._current_size] = element
+        self._current_size += 1
+        if self._current_size == self._max_size:
+            self._max_size *= 2
+            new_arr = [self._typeof(0)] * self._max_size
+            for i, element in enumerate(self._allocated_cell):
+                new_arr[i] = element
+            self._allocated_cell = new_arr
+
+    def _add_element_check(self, element: T) -> None:
+        if type(element) not in self._types:
+            raise ValueError(f"element: {element}, not a valid type for array of type {self._typeof}")
+    
+    def __getitem__(self, index: int) -> T:
+        self._get_item_index_check(self, index)
         return self._allocated_cell[index]
     
-    def _get_item_check(self, index: int) -> None:
+    def _get_item_index_check(self, index: int) -> None:
         if type(index) != int:
             raise(f"Invalid index: {index}, must be an int.")
         if self._current_size == 0:
                 raise IndexError(f"array: {self._allocated_cell} has no members to call upon.")
-        if index < 0 or index >= self._current_size:
+        if index < 0 or index > self._current_size:
             raise(f"Invalid index: {index}, out of list index range.")
     
     def __str__(self) -> str:
-        return self._allocated_cell.__str__()
+        return self._allocated_cell[:self._current_size].__str__()
 
     def __iter__(self) -> Iterator[T]:
         return ArrayIterator(self)
@@ -55,12 +67,12 @@ class Array(Generic[T]):
 class ArrayIterator:
     def __init__(self, array: Array):
         self._array = array
-        self._index = 0
+        self._current_size = 0
 
     def __next__(self) -> T:
-        if self._index < self._array._current_size:
-            value = self._array._allocated_cell[self._index]
-            self._index += 1
+        if self._current_size < self._array._current_size:
+            value = self._array._allocated_cell[self._current_size]
+            self._current_size += 1
             return value
         else:
             raise StopIteration
