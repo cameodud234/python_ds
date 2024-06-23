@@ -13,7 +13,6 @@ class TestArrayConstructor(unittest.TestCase):
                 self.assertEqual(arr._max_size, size)
                 self.assertEqual(arr._current_size, 0)
                 self.assertEqual(len(arr._allocated_cell), size)
-                self.assertEqual(arr._iter_position, 0)
                 self.assertEqual(arr._typeof, typeof)
 
     def test_invalid_size(self):

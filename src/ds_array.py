@@ -1,8 +1,10 @@
-from typing import Union, TypeVar
+from typing import TypeVar, Generic, Iterator
 
-class Array:
+T = TypeVar('T', int, float)
 
-    T = TypeVar('T', int, float)
+class Array(Generic[T]):
+
+    _types = (int, float)
     
     def __init__(self, size: int, typeof: type[T] = int) -> None:
         """
@@ -18,7 +20,6 @@ class Array:
         self._max_size = size
         self._current_size = 0
         self._typeof = typeof
-        self._iter_position = 0
         self._allocated_cell = [self._typeof(0)] * self._max_size
         
     def _constructor_check(self, size: int, typeof: type[T]) -> None:
@@ -48,13 +49,18 @@ class Array:
     def __str__(self) -> str:
         return self._allocated_cell.__str__()
 
-    def __iter__(self) -> object:
-        return self
+    def __iter__(self) -> Iterator[T]:
+        return ArrayIterator(self)
+    
+class ArrayIterator:
+    def __init__(self, array: Array):
+        self._array = array
+        self._index = 0
 
-    def __next__(self) -> type[T]:
-        if self._iter_position < self._current_size:
-            value = self._allocated_cell[self._iter_position]
-            self._iter_position += 1
+    def __next__(self) -> T:
+        if self._index < self._array._current_size:
+            value = self._array._allocated_cell[self._index]
+            self._index += 1
             return value
         else:
             raise StopIteration
