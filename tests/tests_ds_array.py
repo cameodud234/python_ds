@@ -45,6 +45,94 @@ class TestArrayConstructor(unittest.TestCase):
         arr = Array(4, int)
         self.assertListEqual(arr.get_array(), [])
 
+    def test_add_valid_elements(self):
+        """Test adding valid elements to the array."""
+        arr = Array(3, int)
+
+        # Add elements within the initial size
+        arr.add(5)
+        arr.add(-2)
+        arr.add(10)
+
+        self.assertEqual(arr.get_array(), [5, -2, 10])
+        self.assertEqual(arr._current_size, 3)
+        self.assertEqual(arr._max_size, 3)  # Size should not have changed yet
+
+        # Add elements that trigger resizing
+        arr.add(20)  # Should resize
+        arr.add(30)
+
+        self.assertEqual(arr.get_array(), [5, -2, 10, 20, 30])
+        self.assertEqual(arr._current_size, 5)
+        self.assertEqual(arr._max_size, 6)  # Size should have doubled
+
+    def test_add_invalid_type(self):
+        """Test adding an element of invalid type."""
+        arr = Array(3, float)
+        with self.assertRaises(ValueError):
+            arr.add("hello")
+
+    def test_add_to_float_array(self):
+        """Test adding float elements to a float array."""
+        arr = Array(2, float)
+        arr.add(1.5)
+        arr.add(2.7)
+        self.assertEqual(arr.get_array(), [1.5, 2.7])
+
+        # Add elements to trigger resizing
+        arr.add(-3.8)
+        self.assertEqual(arr.get_array(), [1.5, 2.7, -3.8])
+        self.assertEqual(arr._max_size, 4)  # Size should have doubled
+
+    def test_pop_from_non_empty_array(self):
+        """Test popping elements from an array with elements."""
+        sizes = [1, 5, 10]
+        types = [int, float]
+
+        for size in sizes:
+            for typeof in types:
+                arr = Array(size, typeof)
+                for i in range(size):
+                    arr.add(i * 2)  # Add some elements
+
+                # Pop elements and check results
+                for i in reversed(range(size)):  # Pop in reverse order
+                    popped_value = arr.pop()
+                    self.assertEqual(popped_value, i * 2)  # Check popped value
+                    self.assertEqual(arr._current_size, i)  # Check current size
+
+    def test_pop_from_empty_array(self):
+        """Test popping from an empty array (should raise IndexError)."""
+        arr = Array(3, int)
+        with self.assertRaises(IndexError) as context:
+            arr.pop()
+        self.assertEqual(str(context.exception), "Cannot pop from an empty list.")
+
+    def test_pop_after_adding_and_removing(self):
+        """Test popping after adding and removing elements."""
+        arr = Array(5, float)
+        for i in range(5):
+            arr.add(i + 0.5)
+
+        arr.pop()  # Remove the last element
+        arr.pop()
+
+        # Pop again and check
+        popped_value = arr.pop()
+        self.assertEqual(popped_value, 2.5)
+        self.assertEqual(arr._current_size, 2)
+
+    def test_multiple_pops(self):
+        """Test popping multiple elements in a row."""
+        arr = Array(10, int)
+        for i in range(7):  # Add 7 elements
+            arr.add(i)
+
+        for _ in range(3):  # Pop 3 elements
+            arr.pop()
+
+        self.assertEqual(arr.get_array(), [0, 1, 2, 3])  # Check remaining elements
+
     # def test_get_item(self):
 
     #     arr = Array(1)

@@ -33,8 +33,11 @@ class Array(Generic[T]):
     
     def add(self, element: T) -> None:
         self._add_element_check(element)
+        self._resize_array(element)
         self._allocated_cell[self._current_size] = element
         self._current_size += 1
+    
+    def _resize_array(self, element: T) -> None:
         if self._current_size == self._max_size:
             self._max_size *= 2
             new_arr = [self._typeof(0)] * self._max_size
@@ -45,6 +48,17 @@ class Array(Generic[T]):
     def _add_element_check(self, element: T) -> None:
         if type(element) not in self._types:
             raise ValueError(f"element: {element}, not a valid type for array of type {self._typeof}")
+        
+    def pop(self) -> T:
+        self._pop_element_check()
+        last_value = self._allocated_cell[self._current_size - 1]
+        self._allocated_cell[self._current_size - 1] = self._typeof(0)
+        self._current_size -= 1
+        return last_value
+    
+    def _pop_element_check(self) -> None:
+        if self._current_size == 0:
+            raise IndexError(f"Cannot pop from an empty list.")
     
     def __getitem__(self, index: int) -> T:
         self._get_item_index_check(self, index)
