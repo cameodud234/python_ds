@@ -31,7 +31,7 @@ class TestArrayConstructor(unittest.TestCase):
         # for i, val in enumerate(arr):
             # self.assertEqual(val, 0)  # Initial values should be 0
             # arr[i] = i  # Modify the values during iteration
-        # self.assertEqual(arr.get_array(), [0, 1, 2, 3, 4])  # Check if values were changed
+        # self.assertEqual(arr.get_list(), [0, 1, 2, 3, 4])  # Check if values were changed
 
     def test_next(self):
         """Test the __next__ method directly."""
@@ -40,10 +40,10 @@ class TestArrayConstructor(unittest.TestCase):
         with self.assertRaises(StopIteration):
             next(iterator)  # Should raise StopIteration at the end
 
-    def test_get_array(self):
+    def test_get_list(self):
         """Test retrieving the underlying array."""
         arr = Array(4, int)
-        self.assertListEqual(arr.get_array(), [])
+        self.assertListEqual(arr.get_list(), [])
 
     def test_add_valid_elements(self):
         """Test adding valid elements to the array."""
@@ -54,7 +54,7 @@ class TestArrayConstructor(unittest.TestCase):
         arr.add(-2)
         arr.add(10)
 
-        self.assertEqual(arr.get_array(), [5, -2, 10])
+        self.assertEqual(arr.get_list(), [5, -2, 10])
         self.assertEqual(arr._current_size, 3)
         self.assertEqual(arr._max_size, 3)  # Size should not have changed yet
 
@@ -62,7 +62,7 @@ class TestArrayConstructor(unittest.TestCase):
         arr.add(20)  # Should resize
         arr.add(30)
 
-        self.assertEqual(arr.get_array(), [5, -2, 10, 20, 30])
+        self.assertEqual(arr.get_list(), [5, -2, 10, 20, 30])
         self.assertEqual(arr._current_size, 5)
         self.assertEqual(arr._max_size, 6)  # Size should have doubled
 
@@ -77,11 +77,11 @@ class TestArrayConstructor(unittest.TestCase):
         arr = Array(2, float)
         arr.add(1.5)
         arr.add(2.7)
-        self.assertEqual(arr.get_array(), [1.5, 2.7])
+        self.assertEqual(arr.get_list(), [1.5, 2.7])
 
         # Add elements to trigger resizing
         arr.add(-3.8)
-        self.assertEqual(arr.get_array(), [1.5, 2.7, -3.8])
+        self.assertEqual(arr.get_list(), [1.5, 2.7, -3.8])
         self.assertEqual(arr._max_size, 4)  # Size should have doubled
 
     def test_pop_from_non_empty_array(self):
@@ -131,7 +131,36 @@ class TestArrayConstructor(unittest.TestCase):
         for _ in range(3):  # Pop 3 elements
             arr.pop()
 
-        self.assertEqual(arr.get_array(), [0, 1, 2, 3])  # Check remaining elements
+        self.assertEqual(arr.get_list(), [0, 1, 2, 3])  # Check remaining elements
+
+    def test_remove_existing_element(self):
+        """Test removing elements that exist in the array."""
+        sizes = [1, 5, 10]
+        types = [int, float]
+
+        for size in sizes:
+            for typeof in types:
+                arr = Array(size, typeof)
+                elements_to_add = [i * 2 for i in range(size)]  # Create unique elements
+                for element in elements_to_add:
+                    arr.add(element)
+
+                # Remove elements and check the results
+                for element in elements_to_add:
+                    arr.remove(element)
+                    self.assertEqual(arr._current_size, len(elements_to_add) - 1)
+                    self.assertNotIn(element, arr.get_list())
+                    elements_to_add.remove(element)
+    
+    def test_remove_existing_element_wrong_type(self):
+        """Test element not type of array."""
+        my_array = Array(10)
+        my_array.add(3)
+        my_array.add(5)
+        my_array.add(8)
+
+        with self.assertRaises(ValueError):
+            my_array.remove("r")
 
     # def test_get_item(self):
 
