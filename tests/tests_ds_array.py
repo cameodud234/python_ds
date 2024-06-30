@@ -93,7 +93,11 @@ class TestArrayConstructor(unittest.TestCase):
             for typeof in types:
                 arr = Array(size, typeof)
                 for i in range(size):
-                    arr.add(i * 2)  # Add some elements
+                    # Add some elements
+                    if typeof == float:
+                        arr.add(float(i * 2))
+                    else:
+                        arr.add(i * 2)  
 
                 # Pop elements and check results
                 for i in reversed(range(size)):  # Pop in reverse order
@@ -141,7 +145,11 @@ class TestArrayConstructor(unittest.TestCase):
         for size in sizes:
             for typeof in types:
                 arr = Array(size, typeof)
-                elements_to_add = [i * 2 for i in range(size)]  # Create unique elements
+                # Create unique elements
+                if typeof == float:
+                    elements_to_add = [float(i * 2) for i in range(size)]
+                else:
+                    elements_to_add = [i * 2 for i in range(size)] 
                 for element in elements_to_add:
                     arr.add(element)
 

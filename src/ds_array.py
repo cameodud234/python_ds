@@ -29,12 +29,20 @@ class Array(Generic[T]):
         self._allocated_cell[self._current_size] = element
         self._current_size += 1
 
-    def pop(self) -> T:
-        self._pop_element_check()
-        last_value = self._allocated_cell[self._current_size - 1]
-        # self._allocated_cell[self._current_size - 1] = self._typeof(0)
-        self._current_size -= 1
-        return last_value
+    def pop(self, index = -1) -> T:
+        """Removes first instance of element in array"""
+        if index == -1:
+            self._pop_element_check()
+            last_value = self._allocated_cell[self._current_size - 1]
+            # self._allocated_cell[self._current_size - 1] = self._typeof(0)
+            self._current_size -= 1
+            return last_value
+        else:
+            self._get_index_check(index)
+            value = self._allocated_cell[index]
+            del self._allocated_cell[index]
+            return value
+
     
     def remove(self, element: T) -> None:
         """
@@ -54,7 +62,7 @@ class Array(Generic[T]):
         if type(size) != int:
             raise ValueError(f"Invalid size: size={size}, must be an int.")
         if size < 0:
-                raise ValueError(f"Invalid size: {size}, must be greater than or equal zero.")
+            raise ValueError(f"Invalid size: {size}, must be greater than or equal zero.")
         if typeof not in self._types:
             raise ValueError(f"Invalid typeof: typeof={typeof}, must be int or float.")
     
@@ -67,18 +75,14 @@ class Array(Generic[T]):
             self._allocated_cell = new_arr
 
     def _add_element_check(self, element: T) -> None:
-        if type(element) not in self._types:
+        if type(element) != self._typeof:
             raise ValueError(f"element: {element}, not a valid type for array of type {self._typeof}")
         
     def _pop_element_check(self) -> None:
         if self._current_size == 0:
             raise IndexError(f"Cannot pop from an empty list.")
     
-    def __getitem__(self, index: int) -> T:
-        self._get_item_index_check(self, index)
-        return self._allocated_cell[index]
-    
-    def _get_item_index_check(self, index: int) -> None:
+    def _get_index_check(self, index: int) -> None:
         if type(index) != int:
             raise(f"Invalid index: {index}, must be an int.")
         if self._current_size == 0:
@@ -87,7 +91,7 @@ class Array(Generic[T]):
             raise(f"Invalid index: {index}, out of list index range.")
     
     def _remove_check(self, element: T) -> None:
-        if type(element) not in self._types:
+        if type(element) != self._typeof:
             raise ValueError(f"element: {element}, not a valid type for array of type {self._typeof}")
         return
     
@@ -96,6 +100,10 @@ class Array(Generic[T]):
 
     def __iter__(self) -> Iterator[T]:
         return ArrayIterator(self)
+    
+    def __getitem__(self, index: int) -> T:
+        self._get_index_check(self, index)
+        return self._allocated_cell[index]
     
 class ArrayIterator:
     def __init__(self, array: Array):
