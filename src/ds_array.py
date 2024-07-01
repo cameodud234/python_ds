@@ -29,7 +29,7 @@ class Array(Generic[T]):
         self._allocated_cell[self._current_size] = element
         self._current_size += 1
 
-    def pop(self, index = -1) -> T:
+    def pop(self, index: int = -1) -> T:
         """Removes first instance of element in array"""
         if index == -1:
             self._pop_element_check()
@@ -38,7 +38,7 @@ class Array(Generic[T]):
             self._current_size -= 1
             return last_value
         else:
-            self._get_index_check(index)
+            self._pop_index_check(index)
             value = self._allocated_cell[index]
             del self._allocated_cell[index]
             return value
@@ -94,6 +94,14 @@ class Array(Generic[T]):
         if type(element) != self._typeof:
             raise ValueError(f"element: {element}, not a valid type for array of type {self._typeof}")
         return
+
+    def _pop_index_check(self, index: int) -> None:
+        if type(index) != int:
+            raise(f"Invalid index: {index}, must be an int.")
+        if self._current_size == 0:
+                raise IndexError(f"array: {self._allocated_cell} has no members to call upon.")
+        if index < 0 or index > self._current_size:
+            raise(f"Invalid index: {index}, out of list index range.")
     
     def __str__(self) -> str:
         return self._allocated_cell[:self._current_size].__str__()

@@ -170,6 +170,67 @@ class TestArrayConstructor(unittest.TestCase):
         with self.assertRaises(ValueError):
             my_array.remove("r")
 
+    def test_pop_last_element(self):
+        """Test popping the last element (default behavior)."""
+        sizes = [1, 5, 10]
+        types = [int, float]
+
+        for size in sizes:
+            for typeof in types:
+                arr = Array(size, typeof)
+                for i in range(size):
+                    arr.add(i)
+
+                # Pop elements in reverse order
+                for i in reversed(range(size)):
+                    popped_value = arr.pop()
+                    self.assertEqual(popped_value, i)  # Check popped value
+                    self.assertEqual(arr._current_size, i)  # Check current size
+
+    def test_pop_by_index(self):
+        """Test popping elements by specific index."""
+        arr = Array(5, int)
+        for i in range(5):
+            arr.add(i * 10)
+
+        # Test popping at different indices
+        self.assertEqual(arr.pop(2), 20)
+        self.assertEqual(arr.pop(0), 0)
+        self.assertEqual(arr.pop(-1), 40)  # Test negative index for last element
+
+        # Ensure remaining elements are correct
+        self.assertEqual(arr.get_list(), [10, 30])
+        self.assertEqual(arr._current_size, 2)
+
+    def test_pop_from_empty_array(self):
+        """Test popping from an empty array (should raise IndexError)."""
+        arr = Array(3, int)
+        with self.assertRaises(IndexError) as context:
+            arr.pop()
+        self.assertEqual(str(context.exception), "Cannot pop from an empty list.")
+
+    def test_pop_invalid_index(self):
+        """Test popping with invalid indices."""
+        arr = Array(5, float)
+        with self.assertRaises(IndexError):
+            arr.pop(5)  # Index out of range
+        with self.assertRaises(IndexError):
+            arr.pop(-6) # Index out of range
+        with self.assertRaises(TypeError):
+            arr.pop(1.5)  # Non-integer index
+
+    def test_pop_after_resize(self):
+        """Test popping after the array has been resized."""
+        arr = Array(2, int)
+        arr.add(10)
+        arr.add(20)
+        arr.add(30)  # Triggers resize
+        arr.add(40)
+
+        self.assertEqual(arr.pop(), 40)
+        self.assertEqual(arr.pop(1), 20)
+        self.assertEqual(arr._max_size, 4)  # Check if max_size is updated after resize
+
     # def test_get_item(self):
 
     #     arr = Array(1)
