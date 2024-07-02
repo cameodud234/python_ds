@@ -23,6 +23,9 @@ class Array(Generic[T]):
     def get_list(self) -> list[T]:
         return self._allocated_cell[:self._current_size]
     
+    def get_size(self):
+        return self._current_size
+    
     def add(self, element: T) -> None:
         self._add_element_check(element)
         self._resize_array(element)
@@ -30,19 +33,24 @@ class Array(Generic[T]):
         self._current_size += 1
 
     def pop(self, index: int = -1) -> T:
-        """Removes first instance of element in array"""
+        """ Removes first instance of element in array """
         if index == -1:
             self._pop_element_check()
-            last_value = self._allocated_cell[self._current_size - 1]
-            # self._allocated_cell[self._current_size - 1] = self._typeof(0)
-            self._current_size -= 1
-            return last_value
+            value = self._allocated_cell[self._current_size - 1]
         else:
             self._pop_index_check(index)
             value = self._allocated_cell[index]
-            del self._allocated_cell[index]
-            return value
-
+            for i in range(index + 1, self._current_size):
+                current_index = self._current_size - 1
+                while current_index != index:
+                    # swap values of the current_index with the index.
+                    self._allocated_cell[current_index - 1], \
+                        self._allocated_cell[current_index] = self._allocated_cell[current_index], \
+                            self._allocated_cell[current_index -  1]
+                    current_index -= 1
+        
+        self._current_size -= 1
+        return value
     
     def remove(self, element: T) -> None:
         """
@@ -52,11 +60,23 @@ class Array(Generic[T]):
         self._remove_check(element)
         for i, value in enumerate(self._allocated_cell):
             if isclose(value, element):
-                del self._allocated_cell[i]
+                for j in range(i + 1, self._current_size):
+                    current_index = self._current_size - 1
+                    while current_index != i:
+                        # swap values of the current_index with the index.
+                        self._allocated_cell[current_index - 1], \
+                            self._allocated_cell[current_index] = self._allocated_cell[current_index], \
+                                self._allocated_cell[current_index -  1]
+                        current_index -= 1
                 self._current_size -= 1
                 return
         raise ValueError(f"Element: {element} not found in array.")
-        
+    
+    def remove_all(self, element: T) -> None:
+        """
+        Removes all instances of this value in the array.
+        """
+        pass
 
     def _constructor_check(self, size: int, typeof: type[T]) -> None:
         if type(size) != int:
@@ -84,11 +104,11 @@ class Array(Generic[T]):
     
     def _get_index_check(self, index: int) -> None:
         if type(index) != int:
-            raise(f"Invalid index: {index}, must be an int.")
+            raise IndexError(f"Invalid index: {index}, must be an int.")
         if self._current_size == 0:
                 raise IndexError(f"array: {self._allocated_cell} has no members to call upon.")
-        if index < 0 or index > self._current_size:
-            raise(f"Invalid index: {index}, out of list index range.")
+        if index < -1 or index > self._current_size:
+            raise IndexError(f"Invalid index: {index}, out of list index range.")
     
     def _remove_check(self, element: T) -> None:
         if type(element) != self._typeof:
@@ -100,8 +120,8 @@ class Array(Generic[T]):
             raise(f"Invalid index: {index}, must be an int.")
         if self._current_size == 0:
                 raise IndexError(f"array: {self._allocated_cell} has no members to call upon.")
-        if index < 0 or index > self._current_size:
-            raise(f"Invalid index: {index}, out of list index range.")
+        if index < -1 or index >= self._current_size:
+            raise IndexError(f"Invalid index: {index}, out of list index range.")
     
     def __str__(self) -> str:
         return self._allocated_cell[:self._current_size].__str__()
@@ -110,7 +130,7 @@ class Array(Generic[T]):
         return ArrayIterator(self)
     
     def __getitem__(self, index: int) -> T:
-        self._get_index_check(self, index)
+        self._get_index_check(index)
         return self._allocated_cell[index]
     
 class ArrayIterator:

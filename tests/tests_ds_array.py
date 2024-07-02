@@ -179,7 +179,10 @@ class TestArrayConstructor(unittest.TestCase):
             for typeof in types:
                 arr = Array(size, typeof)
                 for i in range(size):
-                    arr.add(i)
+                    if typeof == float:
+                        arr.add(float(i))
+                    else:
+                        arr.add(i)
 
                 # Pop elements in reverse order
                 for i in reversed(range(size)):
@@ -189,7 +192,7 @@ class TestArrayConstructor(unittest.TestCase):
 
     def test_pop_by_index(self):
         """Test popping elements by specific index."""
-        arr = Array(5, int)
+        arr = Array(5)
         for i in range(5):
             arr.add(i * 10)
 
@@ -231,17 +234,23 @@ class TestArrayConstructor(unittest.TestCase):
         self.assertEqual(arr.pop(1), 20)
         self.assertEqual(arr._max_size, 4)  # Check if max_size is updated after resize
 
-    # def test_get_item(self):
+    def test_get_item(self):
 
-    #     arr = Array(1)
-    #     self.assertEqual(arr[0], 0)
+        arr = Array(5)
+        for i in range(5):
+            arr.add(i * 10)
 
-    #     with self.assertRaises(IndexError):
-    #         arr = Array(0)
-    #         arr[0]  # Array with no values has no index yet
-    #     with self.assertRaises(IndexError):
-    #         arr = Array(1)
-    #         arr[1] # Array with one value has no element at position 1
-    #     with self.assertRaises(IndexError):
-    #         arr = Array(100)
-    #         arr[50] # Array initialized with 100 elements does not yet have index 50 defined
+        self.assertEqual(arr[4], 40)
+        self.assertEqual(arr[2], 20)
+        self.assertEqual(arr[-1], 40)
+
+
+        with self.assertRaises(IndexError):
+            arr = Array(0)
+            arr[0]  # Array with no values has no index yet
+        with self.assertRaises(IndexError):
+            arr = Array(1)
+            arr[1] # Array with one value has no element at position 1
+        with self.assertRaises(IndexError):
+            arr = Array(100)
+            arr[50] # Array initialized with 100 elements does not yet have index 50 defined
