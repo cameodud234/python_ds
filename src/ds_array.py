@@ -6,6 +6,13 @@ T = TypeVar('T', int, float)
 class Array(Generic[T]):
 
     _types = (int, float)
+
+    def __init__(self, values: list[T]):
+        self._constructor_check(values)
+        self._max_size = len(values)
+        self._current_size = len(values)
+        self._typeof = type(values[0])
+        self._allocated_cell = [self._typeof(0)] * self._max_size
     
     def __init__(self, size: int, typeof: type[T] = int) -> None:
         """
@@ -26,14 +33,17 @@ class Array(Generic[T]):
     def get_size(self):
         return self._current_size
     
-    def add(self, element: T) -> None:
-        self._add_element_check(element)
+    def add(self, element: T, index: int = -1) -> None:
+        self._add_element_check(element, index)
         self._resize_array(element)
-        self._allocated_cell[self._current_size] = element
-        self._current_size += 1
+        if index == -1:
+            self._allocated_cell[self._current_size] = element
+            self._current_size += 1
+        else:
+            pass
 
     def pop(self, index: int = -1) -> T:
-        """ Removes first instance of element in array """
+        """ Removes element at index in array """
         if index == -1:
             self._pop_element_check()
             value = self._allocated_cell[self._current_size - 1]
@@ -54,8 +64,7 @@ class Array(Generic[T]):
     
     def remove(self, element: T) -> None:
         """
-        Removes an element at index: i and shifts all
-        [i+1, n] (if starting at index) 1 values to the left by 1
+        Removes first element at index: i that matches element
         """
         self._remove_check(element)
         for i, value in enumerate(self._allocated_cell):
@@ -76,7 +85,24 @@ class Array(Generic[T]):
         """
         Removes all instances of this value in the array.
         """
-        pass
+        self._remove_check(element)
+        count = 0
+        if self._typeof == int:
+            for i in range(0, self._current_size):
+                if self._allocated_cell[i] == element:
+                    count += 1
+        else:
+            for i in range(0, self._current_size):
+                if isclose(self._allocated_cell[i], element):
+                    count += 1
+        
+        if count == 0:
+            raise ValueError(f"Element: {element} not found in array.")
+        
+        for i in range(count):
+            self.remove(element)
+        
+        
 
     def _constructor_check(self, size: int, typeof: type[T]) -> None:
         if type(size) != int:
@@ -86,6 +112,14 @@ class Array(Generic[T]):
         if typeof not in self._types:
             raise ValueError(f"Invalid typeof: typeof={typeof}, must be int or float.")
     
+    def _constructor_check(self, values: list[T]):
+        if len(values) == 0:
+            raise ValueError(f"Array parameter must have values.")
+        typeof = type(values[0])
+        for value in values:
+            if type(value) != typeof:
+                raise ValueError(f"Array paramter must have a consistent type.")
+    
     def _resize_array(self, element: T) -> None:
         if self._current_size == self._max_size:
             self._max_size *= 2
@@ -94,9 +128,15 @@ class Array(Generic[T]):
                 new_arr[i] = element
             self._allocated_cell = new_arr
 
-    def _add_element_check(self, element: T) -> None:
+    def _add_element_check(self, element: T, index: int) -> None:
         if type(element) != self._typeof:
             raise ValueError(f"element: {element}, not a valid type for array of type {self._typeof}")
+        if not type(index) == int: 
+            raise IndexError(f"Invalid index: {index}, must be an int.")
+        if self._current_size == 0:
+                raise IndexError(f"array: {self._allocated_cell} has no members to call upon.")
+        if index < -2 or index > self._current_size:
+            raise IndexError(f"Invalid index: {index}, out of list index range.")
         
     def _pop_element_check(self) -> None:
         if self._current_size == 0:
